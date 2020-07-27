@@ -1,12 +1,12 @@
 ### 硬件架构
 
-<img src="/Users/lianjiacheng/Documents/个人/自学/CUDA/arch.png">
+<img src="./arch.png">
 
 一个SM(Streaming Multiprocessor)里有多个SP(Streaming Processor)，也叫CUDA core，一个SP执行一个线程
 
 ### 编程模型
 
-<img src="/Users/lianjiacheng/Documents/个人/自学/CUDA/prog_model.gif" width=50%>
+<img src="./prog_model.gif" width=50%>
 
 多个thread组成一个block，多个block组成一个grid
 
@@ -80,7 +80,7 @@ __global__ void reduce(float *d_sum,float*d_data) {
 
 2. Hillis-Steele算法
 
-   <img src="/Users/lianjiacheng/Documents/个人/自学/CUDA/Hillis-Steele.png" width=50%>
+   <img src="./Hillis-Steele.png" width=50%>
 
    ```c++
    __global__ void scan(float *d_data) {
