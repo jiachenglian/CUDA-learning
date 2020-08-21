@@ -12,6 +12,8 @@
 
 thread级并行、block级并行、流并行(grid级)
 
+`__syncthreads()`用于同一block内的线程同步
+
 ##### 变量内存空间标识符
 
 * `__device__` 表示存放在device的变量，如果之后不跟下面三个标识符，说明放在global memory中，可被grid中所有thread访问
@@ -34,6 +36,35 @@ thread级并行、block级并行、流并行(grid级)
 * `__device__` 仅能被device调用并在device上执行
 
 * `__host__` 仅能被host调用并在host上执行，可省略
+
+##### 内存分配和释放
+
+```c++
+// 1D
+__host__ cudaError_t cudaMalloc(void** devPtr, size_t size);
+
+// 2D, pitch for actual width in bytes allocated
+__host__ cudaError_t cudaMallocPitch(void** devPtr, size_t* pitch, size_t widthByte, size_t height);
+
+// free
+__host__ cudaError_t cudaFree(void* devPtr);
+```
+
+##### 数据搬运
+
+```c++
+// 1D
+__host__ cudaError_t cudaMemcpy(void* dst, const void* src, size_t size, cudaMemcpyKind);
+
+// 2D, dpitch for dst pitch, spitch for src pitch
+__host__ cudaError_t cudaMemcpy2D(void* dst, size_t dpitch, const void* src, size_t spitch, size_t widthByte, size_t height, cudaMemcpyKind);
+
+// global and constant memory, offset for offset from start of symbol in bytes
+__host__ cudaError_t cudaMemcpyFromSymbol(void* dst, const void* symbol, size_t size, size_t offset = 0, cudaMemcpyKind kind = cudaMemcpyDeviceToHost);
+__host__ cudaError_t cudaMemcpyToSymbol(const void* symbol, const void* src, size_t size, size_t offset = 0, cudaMemcpyKind kind = cudaMemcpyHostToDevice);
+```
+
+
 
 ### 基本算法
 
@@ -99,3 +130,13 @@ __global__ void reduce(float *d_sum,float*d_data) {
 
 3. Blelloch算法
 
+<img src="./Blelloch.png" width=60%>
+
+##### 复杂度
+
+|          | 线性扫描 | Hillis-Steele算法 | Blelloch算法 |
+| -------- | -------- | ----------------- | ------------ |
+| 计算量   | O(n)     | O(n*log n)        | O(n)         |
+| 计算步数 | n        | log n             | 2*log n      |
+
+n>>processor时适合用work efficient算法，n<processor时适合用step efficient算法
